@@ -1,0 +1,38 @@
+using UnityEngine;
+
+public class ShooterEnemigo : MonoBehaviour
+{
+    public GameObject Shoot; // Prefab del disparo
+    public Transform firePoint;
+    public float fireRate = 1f;
+    
+    void Start()
+    {
+        Debug.Log($"Iniciando ShooterEnemigo en {gameObject.name}");
+        
+        // Crear firePoint directamente como hijo del enemigo
+        GameObject firePointObj = new GameObject("FirePoint");
+        firePointObj.transform.parent = transform;
+        firePointObj.transform.localPosition = new Vector3(0f, firePoint.localPosition.y, 0f);
+        firePoint = firePointObj.transform;
+        
+        Debug.Log($"FirePoint creado en {gameObject.name}");
+        Debug.Log($"ShooterEnemigo iniciado en {gameObject.name}. Disparará cada {fireRate} segundos");
+        
+        // Comienza a disparar inmediatamente
+        InvokeRepeating("ShootBullet", 0.1f, fireRate);
+    }
+    
+   void ShootBullet()
+{
+    if (Shoot == null || firePoint == null)
+    {
+        Debug.LogError($"Error en configuración de disparo en {gameObject.name}");
+        return;
+    }
+    
+    // Usa Quaternion.Euler para definir explícitamente la rotación (0, 0, 180 apunta hacia abajo)
+    GameObject bullet = Instantiate(Shoot, firePoint.position, Quaternion.Euler(0, 0, 180));
+    Debug.Log($"Bala enemiga disparada en posición {bullet.transform.position}");
+}
+}
