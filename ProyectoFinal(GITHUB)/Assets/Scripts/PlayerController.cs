@@ -19,7 +19,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject particles;
 
     private Generadorobjetos generadorobjetos;
-    private bool iswall;
     [SerializeField] public AudioClip gameOverSound;
     private AudioSource audioSource;
     public float minX = -2.76f;
@@ -31,6 +30,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float tiempopasar=60;
     private bool yapaso=false;
     private GameObject personajeInstanciado;
+
+    private bool backmoving = true;
 
     
     private void Awake()
@@ -87,10 +88,7 @@ public class PlayerController : MonoBehaviour
             Vector2 mover = new Vector2(joy.Horizontal, joy.Vertical);
             control = mover.normalized * speed;
 
-            if (iswall)
-            {
-                Debug.Log("Está tocando la pared.");
-            }
+            
         }
 
         if(!yapaso)
@@ -98,29 +96,42 @@ public class PlayerController : MonoBehaviour
             tiemposobrevivido+=Time.deltaTime;
             if(tiemposobrevivido > tiempopasar)
             {
-                siguienteFase();
+                BossController bossController = Object.FindFirstObjectByType<BossController>();
+                if (bossController == null)
+                {
+                    siguienteFase();
+                }
+                
             }
         }
     }
 
     private void FixedUpdate()
     {
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        float horizontalInput = spriteRenderer.bounds.size.x / 2;
-        float verticalInput = spriteRenderer.bounds.size.y / 2;
+      if(!backmoving) return;
 
         Vector2 newPos = rig.position + control * Time.fixedDeltaTime;
-        newPos.x = Mathf.Clamp(newPos.x, minX + horizontalInput, maxX - horizontalInput);
-        newPos.y = Mathf.Clamp(newPos.y, minY + verticalInput, maxY - verticalInput);
+        newPos.x = Mathf.Clamp(newPos.x, minX, maxX);
+        newPos.y = Mathf.Clamp(newPos.y, minY, maxY);
         rig.MovePosition(newPos);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (collision.gameObject.CompareTag("wall"))
-            iswall = true;
+        if (other.CompareTag("enemy") || other.CompareTag("finallboss"))
+        {
+            float backforce = 3f;
+            Vector2 direction = (transform.position - other.transform.position).normalized;
+            rig.AddForce(direction * backforce, ForceMode2D.Impulse);
+            StartCoroutine(DesactivarMovimientoPorGolpe());
+        }
     }
-
+private IEnumerator DesactivarMovimientoPorGolpe()
+{
+    backmoving = false;
+    yield return new WaitForSeconds(0.1f); // Tiempo de retroceso
+    backmoving = true; 
+}
     public void TomarDaño(float daño)
     {
         vida -= daño;
@@ -165,19 +176,19 @@ public class PlayerController : MonoBehaviour
         string escena = SceneManager.GetActiveScene().name;
         if (escena == "GameScene")
         {
-            textointroduccion.text = "Sobrevive el tiempo necesario para pasar a la siguiente fase";
+            textointroduccion.text = "FASE 1:\nSobrevive el tiempo necesario para pasar a la siguiente fase";
             textointroduccion.gameObject.SetActive(true);
             StartCoroutine(QuitarTexto());
         }
         else if (escena == "GameScene 1")
         {
-            textointroduccion.text = "Sobrevive el tiempo necesario para pasar a la siguiente fase";
+            textointroduccion.text = "FASE 2:\nSobrevive el tiempo necesario para pasar a la siguiente fase";
             textointroduccion.gameObject.SetActive(true);
             StartCoroutine(QuitarTexto());
         }
         else if (escena == "GameScene 2")
         {
-            textointroduccion.text = "Sobrevive el tiempo necesario para pasar a la siguiente fase";
+            textointroduccion.text = "FASE 3:\nSobrevive el tiempo necesario para pasar a la siguiente fase";
             textointroduccion.gameObject.SetActive(true);
             StartCoroutine(QuitarTexto());
         }
@@ -185,7 +196,7 @@ public class PlayerController : MonoBehaviour
     }
     private IEnumerator QuitarTexto()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2f);
         textointroduccion.gameObject.SetActive(false);
     }
     private void siguienteFase()
