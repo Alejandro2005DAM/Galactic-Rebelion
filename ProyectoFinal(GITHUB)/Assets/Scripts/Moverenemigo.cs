@@ -81,34 +81,36 @@ public class Moverenemigo : MonoBehaviour
             {
                 Instantiate(particles, transform.position, Quaternion.identity);
             }
-            MonoBehaviour shooter= GetComponent<ShooterEnemigo>();
-            if(shooter != null)
-                {
-                shooter.enabled = false; // Desactivar el script ShooterEnemigo
-                }
-            MonoBehaviour bala= GetComponent<Bullet>();
-            if(bala != null)
-                {
-                bala.enabled = false; // Desactivar el script Bullet
-                }
+           
+           
             if (boom != null)
             {
-                audiosource.PlayOneShot(boom);
+                audiosource.PlayOneShot(boom, 0.75f);
 
                 // Mantener solo el componente AudioSource y desactivar el resto
+                Collider2D collider = GetComponent<Collider2D>();
+                if (collider != null)
+                {
+                    collider.enabled = false; // Desactivar el collider para evitar más colisiones
+                }
                 Renderer renderer = GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    renderer.enabled = false;
+                    renderer.enabled = false; // Desactivar el renderer para ocultar el objeto
                 }
-                Collider collider = GetComponent<Collider>();
-                if (collider != null)
+                SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null)
                 {
-                    collider.enabled = false;
-
+                    spriteRenderer.enabled = false;
+                }
+                ShooterEnemigo shooter = Object.FindFirstObjectByType<ShooterEnemigo>();
+                if (shooter != null)
+                {
+                    shooter.StopShooting();
+                    Destroy(gameObject, boom.length);
                 }
                 // Destruir el objeto después de que termine el sonido
-                Destroy(gameObject, boom.length - 7.25f);
+                
             }
             else
             {
