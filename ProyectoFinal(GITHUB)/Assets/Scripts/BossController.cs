@@ -1,7 +1,7 @@
 using UnityEngine;
 public class BossController : MonoBehaviour
 {
-    public float speeddown = 1f;
+    public float speeddown = 10f;
     
     private bool inmune = true;
    [HideInInspector] public Transform[] waypoints;
@@ -14,7 +14,7 @@ public class BossController : MonoBehaviour
     private Color originalColor;
     public float speed = 2f;
     private Puntaje puntaje;
-    private int currentWaypoint = 0;
+    private int currentWaypoint = 0;  
     private Vector3 targetPosition;
     private bool isarrived = false;
     public Generadorobjetos generador;
@@ -56,10 +56,10 @@ public class BossController : MonoBehaviour
             
             Vector3 currentPosition = transform.position;
             targetPosition = new Vector3(currentPosition.x, 1.8f, currentPosition.z);
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, speeddown * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, speeddown * Time.deltaTime );
             if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
             {
-                if(shooterBoss != null)
+                if (shooterBoss != null)
                 {
                     shooterBoss.StartShooting();
                 }
@@ -122,23 +122,31 @@ public class BossController : MonoBehaviour
             }
              if (boom != null)
             {
-                audiosource.PlayOneShot(boom);
-
-                // Mantener solo el componente AudioSource y desactivar el resto
+                audiosource.PlayOneShot(boom,1f);
+                Collider2D collider = GetComponent<Collider2D>();
+                if (collider != null)
+                {
+                    collider.enabled = false; // Desactivar el collider para evitar más colisiones
+                }
                 Renderer renderer = GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    renderer.enabled = false;
+                    renderer.enabled = false; // Desactivar el renderer para evitar más visualización
                 }
-                Collider collider = GetComponent<Collider>();
-                if (collider != null)
+                // Mantener solo el componente AudioSource y desactivar el resto
+                SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null)
                 {
-                    collider.enabled = false;
-
+                    spriteRenderer.enabled = false;
+                }
+                ShooterBoss shooterBoss = GetComponent<ShooterBoss>();
+                if (shooterBoss != null)
+                {
+                    shooterBoss.StopShooting();
+                    Destroy(gameObject, boom.length-0.5f); 
                 }
 
-                // Destruir el objeto después de que termine el sonido
-                Destroy(gameObject, 0.5f); 
+                
             }
             else
             {
