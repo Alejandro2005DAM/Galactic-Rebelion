@@ -4,7 +4,7 @@ using System.Collections;
 public class Generadorobjetos : MonoBehaviour
 {
     public GameObject[] objetos;  // Prefabs de enemigos
-    public float timeSpawn = 1;
+    public float timeSpawn = 2f;
     public float Spawnrate = 3;
     [SerializeField] public GameObject pilot;
     private float velocidad = 1f; // Velocidad de los enemigos
@@ -31,21 +31,21 @@ public class Generadorobjetos : MonoBehaviour
         {
 
             case "Facil":
-                timeSpawn = 2f;
+                timeSpawn = 2.5f;
                 Spawnrate = 1.5f;
                 timespawnboss = 20f;
                 velocidad = 4f; // Ajustar velocidad de enemigos en modo fácil
                 velocidadboss = 3f; // Ajustar velocidad del jefe en modo fácil
                 break;
             case "Medio":
-                timeSpawn = 2f;
+                timeSpawn = 2.5f;
                 Spawnrate = 1f;
                 timespawnboss = 15f;
                 velocidad = 5f; // Ajustar velocidad de enemigos en modo medio
                 velocidadboss = 4f; // Ajustar velocidad del jefe en modo medio
                 break;
             case "Dificil":
-                timeSpawn = 2f;
+                timeSpawn = 2.5f;
                 Spawnrate = 0.6f;
                 timespawnboss = 10f;
                 velocidad = 6f; // Ajustar velocidad de enemigos en modo difícil
@@ -106,15 +106,33 @@ public class Generadorobjetos : MonoBehaviour
     private IEnumerator PiltotandBoss()
     {
         CancelInvoke("Spawnenemies");
-         if (pilot != null)
+        if (pilot != null)
         {
-            pilot.SetActive(true); // Activar el piloto si está asignado
+            Vector3 startPos = new Vector3(right.position.x + 2f, 0f, 0f); //posición de inicio
+            Vector3 endPos = new Vector3(0f, 0f, 0f);// posición final
+            pilot.transform.position = startPos; // Posición inicial del piloto
+            float duration = 0.25f; // Duración del movimiento
+            float elapsedTime = 0f;
+            pilot.SetActive(true);
+            while (elapsedTime < duration)
+            {
+                pilot.transform.position = Vector3.Lerp(startPos, endPos, elapsedTime / duration);
+                elapsedTime += Time.deltaTime;
+                yield return null; // Esperar un frame
+            }
+            pilot.transform.position = endPos;
+            yield return new WaitForSeconds(1.5f); // Esperar un segundo antes de la animación de escala
+            elapsedTime = 0f;
+            while (elapsedTime < duration)
+            {
+                pilot.transform.position = Vector3.Lerp(endPos, startPos, elapsedTime / duration);
+                elapsedTime += Time.deltaTime;
+                yield return null; // Esperar un frame
+            }
+            pilot.transform.position = startPos; // Volver a la posición inicial
+            pilot.SetActive(false); // Desactivar el piloto después de la animación
         }
-        yield return new WaitForSeconds(1f); // Esperar 1 segundo antes de instanciar el jefe
-        if(pilot != null)
-        {
-            pilot.SetActive(false); // Desactivar el piloto después de mostrarlo
-        }
+        
         if (alive) yield break; 
 
         Vector3 pos = new Vector3(-0.2f,4.5f,0f);
