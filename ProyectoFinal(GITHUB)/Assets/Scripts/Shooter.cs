@@ -50,7 +50,7 @@ public class Shooter : MonoBehaviour
 
         if (shootsound != null)
         {
-            audiosource.PlayOneShot(shootsound);
+            audiosource.PlayOneShot(shootsound, 0.5f);
         }
         else
         {
@@ -59,6 +59,11 @@ public class Shooter : MonoBehaviour
 
         Instantiate(Shoot, firePoint.position, firePoint.rotation);
         Debug.Log($"Bala disparada desde Shooter en {gameObject.name}");
+    }
+
+    public void StopShooting()
+    {
+        CancelInvoke(nameof(ShootBullet));
     }
     
 }
