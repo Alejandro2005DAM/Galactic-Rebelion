@@ -8,7 +8,7 @@ public class ShooterBoss : MonoBehaviour
 
     private float minFireRate = 0.25f; // Tiempo mínimo entre disparos
     private float maxFireRate = 1f; // Tiempo máximo entre disparos
-
+    private Coroutine shootingCoroutine;
     void Start()
     {
         Debug.Log($"Iniciando ShooterEnemigo en {gameObject.name}");
@@ -39,16 +39,28 @@ public class ShooterBoss : MonoBehaviour
     }
     public void StartShooting()
     {
-
-        StartCoroutine(FrecuenciaDisparo());
+        if (shootingCoroutine == null)
+        {
+        shootingCoroutine = StartCoroutine(FrecuenciaDisparo());
+            
+        }
     }
-    private IEnumerator FrecuenciaDisparo ()
+    private IEnumerator FrecuenciaDisparo()
     {
         while (true)
         {
             ShootBullet();
             float randomDelay = Random.Range(minFireRate, maxFireRate);
             yield return new WaitForSeconds(randomDelay);
+        }
+    }
+    public void StopShooting()
+    {
+        if (shootingCoroutine != null)
+        {
+            StopCoroutine(shootingCoroutine);
+            shootingCoroutine = null;
+            
         }
     }
 }
