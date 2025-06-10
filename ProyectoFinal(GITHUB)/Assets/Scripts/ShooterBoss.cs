@@ -9,22 +9,7 @@ public class ShooterBoss : MonoBehaviour
     private float minFireRate = 0.25f; // Tiempo mínimo entre disparos
     private float maxFireRate = 1f; // Tiempo máximo entre disparos
     private Coroutine shootingCoroutine;
-    void Start()
-    {
-        Debug.Log($"Iniciando ShooterEnemigo en {gameObject.name}");
-
-        // Crear firePoint directamente como hijo del enemigo
-        GameObject firePointObj = new GameObject("BossFirePoint");
-        firePointObj.transform.parent = transform;
-        firePointObj.transform.localPosition = new Vector3(0f, firePoint.localPosition.y, 0f);
-        firePoint = firePointObj.transform;
-
-        Debug.Log($"FirePoint creado en {gameObject.name}");
-        Debug.Log($"ShooterEnemigo iniciado en {gameObject.name}. Disparará cada {fireRate} segundos");
-
-        // Comienza a disparar inmediatamente
-    }
-
+  
     void ShootBullet()
     {
         if (Shoot == null || firePoint == null)
@@ -34,8 +19,7 @@ public class ShooterBoss : MonoBehaviour
         }
 
         // Usa Quaternion.Euler para definir explícitamente la rotación (0, 0, 180 apunta hacia abajo)
-        GameObject bullet = Instantiate(Shoot, firePoint.position, Quaternion.Euler(0, 0, 180));
-        Debug.Log($"Bala enemiga disparada en posición {bullet.transform.position}");
+        Instantiate(Shoot, firePoint.position, Quaternion.Euler(0, 0, 180));
     }
     public void StartShooting()
     {
