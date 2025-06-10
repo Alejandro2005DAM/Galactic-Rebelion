@@ -6,7 +6,8 @@ public class Bullet : MonoBehaviour
     public float speed = 5f;
     private Puntaje puntaje;
     private bool tocado;
-    
+
+    [SerializeField] private GameObject particles;
 
     void Start()
     {
@@ -38,19 +39,23 @@ public class Bullet : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-      
+
         if (other.CompareTag("Player"))
         {
             PlayerController player = other.GetComponent<PlayerController>();
-            
-                
-                player.TomarDaño(1);
-                Destroy(gameObject);
-                tocado=true;
-                Puntaje puntaje= FindFirstObjectByType<Puntaje>();
-                if(puntaje!=null)
+
+
+            player.TomarDaño(1);
+            Destroy(gameObject);
+            tocado = true;
+            Puntaje puntaje = FindFirstObjectByType<Puntaje>();
+            if (puntaje != null)
+            {
+                puntaje.Restar(5f);
+            }
+                if(particles != null)
                 {
-                    puntaje.Restar(5f);
+                    Instantiate(particles, transform.position, Quaternion.identity);
                 }
         }
 
