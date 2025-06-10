@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using TMPro;
 public class Generadorobjetos : MonoBehaviour
 {
     public GameObject[] objetos;  // Prefabs de enemigos
@@ -8,25 +9,43 @@ public class Generadorobjetos : MonoBehaviour
     public float Spawnrate = 3;
     [SerializeField] public GameObject pilot;
     private float velocidad = 1f; // Velocidad de los enemigos
-
+    [SerializeField] public TextMeshProUGUI textoboss;
     private float velocidadboss = 1f; // Velocidad del jefe
     public Transform right;
     public Transform left;
-    public Transform [] bosswaypoints;
+    public Transform[] bosswaypoints;
     public List<GameObject> f1;
     public List<GameObject> f2;
     public List<GameObject> f3;
     public GameObject finalboss; // Referencia a la nave
     private GameObject currentboss;
     public float timespawnboss = 10;
-    [HideInInspector] public bool alive=false;
+    [HideInInspector] public bool alive = false;
 
-    
-       
+    string [] frases = new string[]
+    {
+        "Te voy a matar insecto",
+        "No te vas a escapar",
+        "Prepárate para morir",
+        "Tu fin se acerca",
+        "Te voy a aplastar",
+        "No tienes oportunidad",
+        "Eres debil",
+        "Rindete ahora",
+        "No puedes vencerme",
+        "Tu viaje termina ahora",
+        "No eres rival para mi",
+        "Te vas a arrepentir",
+    };
+
     void Start()
     {
+        if(textoboss!= null)
+        {
+            textoboss.gameObject.SetActive(false);
+        }
         alive = false;
-          string dificultad= PlayerPrefs.GetString("Dificultad", "Facil");
+        string dificultad = PlayerPrefs.GetString("Dificultad", "Facil");
         switch (dificultad)
         {
 
@@ -46,7 +65,7 @@ public class Generadorobjetos : MonoBehaviour
                 break;
             case "Dificil":
                 timeSpawn = 2.5f;
-                Spawnrate = 0.6f;
+                Spawnrate = 0.5f;
                 timespawnboss = 10f;
                 velocidad = 6f; // Ajustar velocidad de enemigos en modo difícil
                 velocidadboss = 5f; // Ajustar velocidad del jefe en modo difícil
@@ -56,7 +75,7 @@ public class Generadorobjetos : MonoBehaviour
                 break;
         }
         InvokeRepeating("Spawnenemies", timeSpawn, Spawnrate);
-        Invoke("Spawnboss",timespawnboss);
+        Invoke("Spawnboss", timespawnboss);
     }
 
     public void Spawnenemies()
@@ -73,7 +92,7 @@ public class Generadorobjetos : MonoBehaviour
             mover.f1 = f1;
             mover.f2 = f2;
             mover.f3 = f3;
-            mover.speed = velocidad; 
+            mover.speed = velocidad;
         }
 
         // Comprobar si tiene el componente Shooter
@@ -85,12 +104,12 @@ public class Generadorobjetos : MonoBehaviour
             firePointObj.transform.SetParent(enemie.transform);
             firePointObj.transform.localPosition = new Vector3(0f, -1f, 0f); // Hacia abajo
             shooterEnemigo.firePoint = firePointObj.transform;
-            
+
             Debug.Log($"FirePoint asignado a Shooter en {enemie.name}");
         }
-        
-        
-        
+
+
+
         if (shooterEnemigo == null)
         {
             Debug.LogWarning($"El enemigo {enemie.name} no tiene ningún componente de disparo");
@@ -100,16 +119,16 @@ public class Generadorobjetos : MonoBehaviour
 
     public void Spawnboss()
     {
-     
-          StartCoroutine(PiltotandBoss());
+
+        StartCoroutine(PiltotandBoss());
     }
     private IEnumerator PiltotandBoss()
     {
         CancelInvoke("Spawnenemies");
         if (pilot != null)
         {
-            Vector3 startPos = new Vector3(right.position.x + 2f, 0f, 0f); //posición de inicio
-            Vector3 endPos = new Vector3(0f, 0f, 0f);// posición final
+            Vector3 startPos = new Vector3(right.position.x + 2f, 0f, 0f);
+            Vector3 endPos = new Vector3(0f, 0f, 0f);
             pilot.transform.position = startPos; // Posición inicial del piloto
             float duration = 0.25f; // Duración del movimiento
             float elapsedTime = 0f;
@@ -121,6 +140,8 @@ public class Generadorobjetos : MonoBehaviour
                 yield return null; // Esperar un frame
             }
             pilot.transform.position = endPos;
+            string randomFrase = frases[Random.Range(0, frases.Length)];
+            MostrarTextoBoss(randomFrase);
             yield return new WaitForSeconds(1.5f); // Esperar un segundo antes de la animación de escala
             elapsedTime = 0f;
             while (elapsedTime < duration)
@@ -132,33 +153,33 @@ public class Generadorobjetos : MonoBehaviour
             pilot.transform.position = startPos; // Volver a la posición inicial
             pilot.SetActive(false); // Desactivar el piloto después de la animación
         }
-        
-        if (alive) yield break; 
 
-        Vector3 pos = new Vector3(-0.2f,4.5f,0f);
+        if (alive) yield break;
+
+        Vector3 pos = new Vector3(-0.2f, 4.5f, 0f);
         currentboss = Instantiate(finalboss, pos, Quaternion.identity);
         alive = true;
 
-        BossController bosscontroller= currentboss.GetComponent<BossController>();
-        if(bosscontroller != null)
-            {
-            bosscontroller.waypoints=bosswaypoints;
+        BossController bosscontroller = currentboss.GetComponent<BossController>();
+        if (bosscontroller != null)
+        {
+            bosscontroller.waypoints = bosswaypoints;
             bosscontroller.speed = velocidadboss; // Asignar velocidad del jefe
-            bosscontroller.generador=this;
+            bosscontroller.generador = this;
 
-            }
+        }
         Shooter shooter = currentboss.GetComponent<Shooter>();
         if (shooter != null)
-            {
-        GameObject firePointObj = new GameObject("BossFirePoint");
-        firePointObj.transform.SetParent(currentboss.transform);
-        firePointObj.transform.localPosition = new Vector3(0f, -1.5f, 0f); // Un poco más abajo que el boss
-        shooter.firePoint = firePointObj.transform;
-        Debug.Log("Boss Shooter configurado.");
+        {
+            GameObject firePointObj = new GameObject("BossFirePoint");
+            firePointObj.transform.SetParent(currentboss.transform);
+            firePointObj.transform.localPosition = new Vector3(0f, -1.5f, 0f); // Un poco más abajo que el boss
+            shooter.firePoint = firePointObj.transform;
+            Debug.Log("Boss Shooter configurado.");
         }
         else
         {
-        Debug.LogWarning("El jefe no tiene un componente Shooter, ¡no podrá disparar!");
+            Debug.LogWarning("El jefe no tiene un componente Shooter, ¡no podrá disparar!");
         }
     }
 
@@ -169,6 +190,19 @@ public class Generadorobjetos : MonoBehaviour
         InvokeRepeating("Spawnenemies", timeSpawn, Spawnrate);
         Invoke("Spawnboss", timespawnboss);
 
+    }
+
+    public void MostrarTextoBoss(string texto)
+    {
+        textoboss.text = texto;
+        textoboss.gameObject.SetActive(true);
+        StartCoroutine(QuitarTexto());
+    }
+    
+    private IEnumerator QuitarTexto()
+    {
+        yield return new WaitForSeconds(2f);
+        textoboss.gameObject.SetActive(false);
     }
 
 }
