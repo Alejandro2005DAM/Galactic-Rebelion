@@ -32,8 +32,7 @@ public class ShooterEnemigo : MonoBehaviour
         }
 
         // Usa Quaternion.Euler para definir explícitamente la rotación (0, 0, 180 apunta hacia abajo)
-        GameObject bullet = Instantiate(Shoot, firePoint.position, Quaternion.Euler(0, 0, 180));
-        Debug.Log($"Bala enemiga disparada en posición {bullet.transform.position}");
+        Instantiate(Shoot, firePoint.position, Quaternion.Euler(0, 0, 180));
     }
 
     public void StopShooting()
