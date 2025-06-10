@@ -97,7 +97,7 @@ public class PlayerController : MonoBehaviour
             if(tiemposobrevivido > tiempopasar)
             {
                 BossController bossController = Object.FindFirstObjectByType<BossController>();
-                if (bossController == null)
+                if (bossController == null) // Si el tiempo es 0 en caso de que el jefe siga vivo , no se pasará a la siguiente escena hasta que lo mates.
                 {
                     siguienteFase();
                 }
@@ -121,7 +121,7 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag("enemy") || other.CompareTag("finallboss"))
         {
             float backforce = 3f;
-            Vector2 direction = (transform.position - other.transform.position).normalized;
+            Vector2 direction = (transform.position - other.transform.position).normalized; //Mover la nave del jugador si colisiona con un enemigo o jefe final
             rig.AddForce(direction * backforce, ForceMode2D.Impulse);
             StartCoroutine(DesactivarMovimientoPorGolpe());
         }
@@ -173,7 +173,7 @@ private IEnumerator DesactivarMovimientoPorGolpe()
     
     private IEnumerator esperar()
     {
-        yield return new WaitForSeconds(0.75f);
+        yield return new WaitForSeconds(0.75f); 
         SceneManager.LoadScene("GameOverScene");
     }
     private void MostrarTexto()
