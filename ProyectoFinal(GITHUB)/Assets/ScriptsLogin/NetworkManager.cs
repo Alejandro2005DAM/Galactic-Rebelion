@@ -114,7 +114,6 @@ public class NetworkManager : MonoBehaviour
         response(JsonUtility.FromJson<Response>(w.text));
     }
 
-    // Añade estos métodos a tu NetworkManager.cs
 
     public void SaveScore(string userName, int score, Action<Response> callback)
     {
