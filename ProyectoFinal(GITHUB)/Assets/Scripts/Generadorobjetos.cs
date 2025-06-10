@@ -71,7 +71,7 @@ public class Generadorobjetos : MonoBehaviour
                 velocidadboss = 5f; // Ajustar velocidad del jefe en modo difícil
                 break;
             default:
-                Debug.LogWarning("Dificultad no reconocida, usando valores por defecto.");
+                Debug.LogWarning("Dificultad no reconocida, usando valores por defecto.");// Si es default sera el nivel fácil
                 break;
         }
         InvokeRepeating("Spawnenemies", timeSpawn, Spawnrate);
@@ -85,7 +85,6 @@ public class Generadorobjetos : MonoBehaviour
         int randomIndex = Random.Range(0, objetos.Length);
         GameObject enemie = Instantiate(objetos[randomIndex], pos, gameObject.transform.rotation);
 
-        // Asignar listas si el enemigo las necesita
         Moverenemigo mover = enemie.GetComponent<Moverenemigo>();
         if (mover != null)
         {
@@ -124,7 +123,7 @@ public class Generadorobjetos : MonoBehaviour
     }
     private IEnumerator PiltotandBoss()
     {
-        CancelInvoke("Spawnenemies");
+        CancelInvoke("Spawnenemies"); //Cancelar el spawneador de enemigos cuando aparezca el jefe
         if (pilot != null)
         {
             Vector3 startPos = new Vector3(right.position.x + 2f, 0f, 0f);
@@ -141,7 +140,7 @@ public class Generadorobjetos : MonoBehaviour
             }
             pilot.transform.position = endPos;
             string randomFrase = frases[Random.Range(0, frases.Length)];
-            MostrarTextoBoss(randomFrase);
+            MostrarTextoBoss(randomFrase); // Selecciona una frase amenazante de forma aleatoria
             yield return new WaitForSeconds(1.5f); // Esperar un segundo antes de la animación de escala
             elapsedTime = 0f;
             while (elapsedTime < duration)
@@ -187,7 +186,7 @@ public class Generadorobjetos : MonoBehaviour
     {
         alive = false;
         currentboss = null;
-        InvokeRepeating("Spawnenemies", timeSpawn, Spawnrate);
+        InvokeRepeating("Spawnenemies", timeSpawn, Spawnrate); //Volver a spawnear enemigos una vez el jefe haya sido derrotado
         Invoke("Spawnboss", timespawnboss);
 
     }
