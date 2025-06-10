@@ -8,6 +8,28 @@ public class BulletTorpedo : MonoBehaviour
     public float speed = 5f;
     private bool tocado;
     private Puntaje puntaje;
+
+    [SerializeField] private GameObject particles;
+
+    void Start()
+    {
+        string dificultad = PlayerPrefs.GetString("Dificultad", "Facil");
+        switch (dificultad)
+        {
+            case "Facil":
+                speed = 5f; // Velocidad de la bala en modo fácil
+                break;
+            case "Medio":
+                speed = 6f; // Velocidad de la bala en modo medio
+                break;
+            case "Dificil":
+                speed = 7f; // Velocidad de la bala en modo difícil
+                break;
+            default:
+                Debug.LogWarning("Dificultad no reconocida, usando velocidad por defecto.");
+                break;
+        }
+    }
     void Update()
     {
         transform.Translate(direction * speed * Time.deltaTime);
@@ -29,6 +51,10 @@ public class BulletTorpedo : MonoBehaviour
                 if(puntaje!=null)
                 {
                     puntaje.Restar(10f);
+                }
+                if (particles != null)
+                {
+                Instantiate(particles, transform.position, Quaternion.identity);
                 }
             
         }
