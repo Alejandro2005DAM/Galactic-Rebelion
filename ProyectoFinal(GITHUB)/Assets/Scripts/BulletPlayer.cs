@@ -5,6 +5,7 @@ public class Bulletplayer : MonoBehaviour
     public Vector3 direction = Vector3.up; // Puedes modificar la dirección por defecto
     public float speed = 5f;
 
+    [SerializeField] private GameObject particles;
     void Update()
     {
         transform.Translate(direction * speed * Time.deltaTime);
@@ -16,11 +17,14 @@ public class Bulletplayer : MonoBehaviour
         {
             Moverenemigo enemy = other.GetComponent<Moverenemigo>();
             if (enemy != null)
-        {
+            {
             Debug.Log("Llamando a TomarDaño...");
             enemy.TomarDaño(1);
-        }
-
+            }
+            if (particles != null)
+            {
+                Instantiate(particles, transform.position, Quaternion.identity);
+            }
             Destroy(gameObject);
             
         }
@@ -32,6 +36,11 @@ public class Bulletplayer : MonoBehaviour
                     boss.TomarDaño(1);
 
                 }
+
+            if (particles != null)
+            {
+                Instantiate(particles, transform.position, Quaternion.identity);
+            }
                 Destroy(gameObject);
              
             
