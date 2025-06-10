@@ -146,6 +146,11 @@ private IEnumerator DesactivarMovimientoPorGolpe()
 
             GetComponent<SpriteRenderer>().enabled = false;
             GetComponent<Collider2D>().enabled = false;
+            Shooter shooter = Object.FindFirstObjectByType<Shooter>();
+            if (shooter != null)
+            {
+                shooter.StopShooting();
+            }
             Puntaje puntaje= Object.FindFirstObjectByType<Puntaje>();
             if (puntaje != null)
             {
@@ -188,7 +193,7 @@ private IEnumerator DesactivarMovimientoPorGolpe()
         }
         else if (escena == "GameScene 2")
         {
-            textointroduccion.text = "FASE 3:\nSobrevive el tiempo necesario para pasar a la siguiente fase";
+            textointroduccion.text = "FASE 3:\nSobrevive el tiempo necesario para la victoria ";
             textointroduccion.gameObject.SetActive(true);
             StartCoroutine(QuitarTexto());
         }
