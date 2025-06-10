@@ -12,6 +12,16 @@ public class Menupausa : MonoBehaviour
     [SerializeField] private GameObject botonMenu;
     [SerializeField] private GameObject introtexto;
     [SerializeField] private GameObject barra;
+    [SerializeField] private AudioSource audioSource;
+    private Joystick joy;
+    public void Awake()
+    {
+        joy = FindFirstObjectByType<Joystick>();
+        if (joy == null)
+        {
+            Debug.LogError("No se encontró ningún Joystick en la escena.");
+        }
+    }
     public void pause()
     {
 
@@ -21,15 +31,20 @@ public class Menupausa : MonoBehaviour
         menuPausa.SetActive(true);
         barra.SetActive(false);
         introtexto.SetActive(false);
+        audioSource.Pause();
+        joy.enabled = false; // Desactiva el joystick al pausar el juego
 
     }
 
-    public void resume(){
+    public void resume()
+    {
 
         Time.timeScale = 1f;
         botonPausa.SetActive(true);
         menuPausa.SetActive(false);
         barra.SetActive(true);
+        audioSource.UnPause();
+        joy.enabled = true; // Reactiva el joystick al reanudar el juego
     }
 
     public void backmenu(){
