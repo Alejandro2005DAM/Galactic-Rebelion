@@ -53,28 +53,23 @@ public class Bullet : MonoBehaviour
             {
                 puntaje.Restar(5f);
             }
-                if(particles != null)
-                {
-                    Instantiate(particles, transform.position, Quaternion.identity);
-                }
+            if (particles != null)
+            {
+                Instantiate(particles, transform.position, Quaternion.identity);
+            }
         }
 
-        if(other.CompareTag("destroyer"))
+        if (other.CompareTag("destroyer"))
         {
             Destroy(gameObject);
-            tocado=true;
+            tocado = true;
 
         }
     }
-   /*  private void OnCollisionEnter2D(Collision2D collision)
-    {
-    if (collision.gameObject.CompareTag("destroyer"))
+    public void DestroyBullet()
     {
         Destroy(gameObject);
     }
-    if (collision.gameObject.CompareTag("Player"))
-    {}
-    }
-    */
+   
 }
 
