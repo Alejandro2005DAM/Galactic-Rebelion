@@ -9,11 +9,12 @@ public class ShooterEnemigo : MonoBehaviour
     void Start()
     {
         Debug.Log($"Iniciando ShooterEnemigo en {gameObject.name}");
-         if (Shoot == null)
-        {
-            Debug.LogWarning($"¡No hay prefab de disparo asignado en {gameObject.name}!");
-        }
         // Comienza a disparar inmediatamente
+        if (firePoint == null)
+        {
+            Debug.LogWarning($"¡No hay firePoint asignado en {gameObject.name}!");
+        }
+        
         InvokeRepeating("ShootBullet", 0.1f, fireRate);
     }
 
@@ -26,12 +27,14 @@ public class ShooterEnemigo : MonoBehaviour
         }
 
         // Usa Quaternion.Euler para definir explícitamente la rotación (0, 0, 180 apunta hacia abajo)
-        GameObject bullet = Instantiate(Shoot, firePoint.position, Quaternion.Euler(0, 0, 180));
-        Debug.Log($"Bala enemiga disparada en posición {bullet.transform.position}");
+        Instantiate(Shoot, firePoint.position, Quaternion.Euler(0, 0, 180));
+
     }
 
     public void StopShooting()
     {
+
         CancelInvoke("ShootBullet");
+        
     }
 }
