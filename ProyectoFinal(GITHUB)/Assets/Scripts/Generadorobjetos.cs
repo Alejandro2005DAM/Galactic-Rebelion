@@ -26,7 +26,7 @@ public class Generadorobjetos : MonoBehaviour
     {
         "Te voy a matar insecto",
         "No te vas a escapar",
-        "Prepárate para morir",
+        "Preparate para morir",
         "Tu fin se acerca",
         "Te voy a aplastar",
         "No tienes oportunidad",
@@ -51,27 +51,32 @@ public class Generadorobjetos : MonoBehaviour
 
             case "Facil":
                 timeSpawn = 2.5f;
-                Spawnrate = 1.5f;
-                timespawnboss = 20f;
+                Spawnrate = 1.25f;
+                timespawnboss = 15f;
                 velocidad = 4f; // Ajustar velocidad de enemigos en modo fácil
                 velocidadboss = 3f; // Ajustar velocidad del jefe en modo fácil
                 break;
             case "Medio":
                 timeSpawn = 2.5f;
-                Spawnrate = 1f;
-                timespawnboss = 15f;
+                Spawnrate = 0.8f;
+                timespawnboss = 12f;
                 velocidad = 5f; // Ajustar velocidad de enemigos en modo medio
                 velocidadboss = 4f; // Ajustar velocidad del jefe en modo medio
                 break;
             case "Dificil":
                 timeSpawn = 2.5f;
-                Spawnrate = 0.5f;
+                Spawnrate = 0.4f;
                 timespawnboss = 10f;
                 velocidad = 6f; // Ajustar velocidad de enemigos en modo difícil
                 velocidadboss = 5f; // Ajustar velocidad del jefe en modo difícil
                 break;
             default:
-                Debug.LogWarning("Dificultad no reconocida, usando valores por defecto.");// Si es default sera el nivel fácil
+                timeSpawn = 2.5f;
+                Spawnrate = 1.25f;
+                timespawnboss = 15f;
+                velocidad = 4f; // Valor por defecto
+                velocidadboss = 3f; // Valor por defecto
+                Debug.LogWarning("Dificultad no reconocida, usando valores por defecto.");
                 break;
         }
         InvokeRepeating("Spawnenemies", timeSpawn, Spawnrate);
@@ -85,6 +90,7 @@ public class Generadorobjetos : MonoBehaviour
         int randomIndex = Random.Range(0, objetos.Length);
         GameObject enemie = Instantiate(objetos[randomIndex], pos, gameObject.transform.rotation);
 
+        // Asignar listas si el enemigo las necesita
         Moverenemigo mover = enemie.GetComponent<Moverenemigo>();
         if (mover != null)
         {
@@ -94,25 +100,8 @@ public class Generadorobjetos : MonoBehaviour
             mover.speed = velocidad;
         }
 
-        // Comprobar si tiene el componente Shooter
-        ShooterEnemigo shooterEnemigo = enemie.GetComponent<ShooterEnemigo>();
-        if (shooterEnemigo != null)
-        {
-            // Crear FirePoint automáticamente para el enemigo
-            GameObject firePointObj = new GameObject("FirePoint");
-            firePointObj.transform.SetParent(enemie.transform);
-            firePointObj.transform.localPosition = new Vector3(0f, -1f, 0f); // Hacia abajo
-            shooterEnemigo.firePoint = firePointObj.transform;
-
-            Debug.Log($"FirePoint asignado a Shooter en {enemie.name}");
-        }
-
-
-
-        if (shooterEnemigo == null)
-        {
-            Debug.LogWarning($"El enemigo {enemie.name} no tiene ningún componente de disparo");
-        }
+       
+        
     }
 
 
@@ -123,7 +112,7 @@ public class Generadorobjetos : MonoBehaviour
     }
     private IEnumerator PiltotandBoss()
     {
-        CancelInvoke("Spawnenemies"); //Cancelar el spawneador de enemigos cuando aparezca el jefe
+        CancelInvoke("Spawnenemies");
         if (pilot != null)
         {
             Vector3 startPos = new Vector3(right.position.x + 2f, 0f, 0f);
@@ -140,7 +129,7 @@ public class Generadorobjetos : MonoBehaviour
             }
             pilot.transform.position = endPos;
             string randomFrase = frases[Random.Range(0, frases.Length)];
-            MostrarTextoBoss(randomFrase); // Selecciona una frase amenazante de forma aleatoria
+            MostrarTextoBoss(randomFrase);
             yield return new WaitForSeconds(1.5f); // Esperar un segundo antes de la animación de escala
             elapsedTime = 0f;
             while (elapsedTime < duration)
@@ -167,26 +156,14 @@ public class Generadorobjetos : MonoBehaviour
             bosscontroller.generador = this;
 
         }
-        Shooter shooter = currentboss.GetComponent<Shooter>();
-        if (shooter != null)
-        {
-            GameObject firePointObj = new GameObject("BossFirePoint");
-            firePointObj.transform.SetParent(currentboss.transform);
-            firePointObj.transform.localPosition = new Vector3(0f, -1.5f, 0f); // Un poco más abajo que el boss
-            shooter.firePoint = firePointObj.transform;
-            Debug.Log("Boss Shooter configurado.");
-        }
-        else
-        {
-            Debug.LogWarning("El jefe no tiene un componente Shooter, ¡no podrá disparar!");
-        }
+        
     }
 
     public void Defeated()
     {
         alive = false;
         currentboss = null;
-        InvokeRepeating("Spawnenemies", timeSpawn, Spawnrate); //Volver a spawnear enemigos una vez el jefe haya sido derrotado
+        InvokeRepeating("Spawnenemies", timeSpawn, Spawnrate);
         Invoke("Spawnboss", timespawnboss);
 
     }
