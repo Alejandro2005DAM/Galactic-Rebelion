@@ -9,6 +9,10 @@ public class ShooterEnemigo : MonoBehaviour
     void Start()
     {
         Debug.Log($"Iniciando ShooterEnemigo en {gameObject.name}");
+         if (Shoot == null)
+        {
+            Debug.LogWarning($"¡No hay prefab de disparo asignado en {gameObject.name}!");
+        }
         // Comienza a disparar inmediatamente
         InvokeRepeating("ShootBullet", 0.1f, fireRate);
     }
