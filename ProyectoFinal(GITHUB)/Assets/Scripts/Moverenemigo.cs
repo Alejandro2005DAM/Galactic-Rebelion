@@ -81,8 +81,8 @@ public class Moverenemigo : MonoBehaviour
             {
                 Instantiate(particles, transform.position, Quaternion.identity);
             }
-           
-           
+
+
             if (boom != null)
             {
                 audiosource.PlayOneShot(boom, 0.75f);
@@ -109,8 +109,13 @@ public class Moverenemigo : MonoBehaviour
                     shooter.StopShooting();
                     Destroy(gameObject, boom.length);
                 }
+                Bullet bullet = GetComponent<Bullet>();
+                if (bullet != null)
+                {
+                    bullet.DestroyBullet(); // Llamar al método DestroyBullet de Bullet
+                }
                 // Destruir el objeto después de que termine el sonido
-                
+
             }
             else
             {
